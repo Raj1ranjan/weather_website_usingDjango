@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import requests
 from datetime import datetime
+import os
 
 def home(request):
     weather = {}
@@ -9,9 +10,10 @@ def home(request):
 
     if request.method == "POST":
         city = request.POST.get("city").strip()
-        api_key = "7b6399c909dcdd07ddaea0891032db16"  # Replace with your actual OpenWeatherMap API key
+        api_key = os.environ.get('API_KEY')
 
-        # Current weather API
+
+        
         current_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
         r1 = requests.get(current_url)
 
