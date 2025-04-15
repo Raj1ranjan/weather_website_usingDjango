@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 3rem;
+            transition: background 1s ease;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+
+        form input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .weather {
+            margin-top: 1rem;
+        }
+
+        .weather img {
+            width: 80px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .forecast-card {
+            background: #f0f8ff;
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .forecast-card img {
+            margin: 0.5rem auto;
+        }
+
+        .forecast-card .date {
+            font-weight: 600;
+        }
+
+        .forecast-card .temp {
+            font-size: 1.1rem;
+        }
+
+        .forecast-card .desc {
+            font-size: 0.9rem;
+        }
+
+        /* Animated Backgrounds */
+        body.sunny {
+            background: linear-gradient(135deg, #fddb92 0%, #d1fdff 100%);
+            animation: sunnyPulse 6s infinite alternate;
+        }
+
+        body.cloudy {
+            background: linear-gradient(135deg, #d7d2cc 0%, #304352 100%);
+        }
+
+        body.rainy {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            animation: rainyDrift 10s linear infinite;
+        }
+
+        body.stormy {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            animation: flashStorm 3s infinite;
+        }
+
+        body.snowy {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            animation: snowyDrift 8s infinite alternate;
+        }
+
+        body.foggy {
+            background: linear-gradient(135deg, #757f9a 0%, #d7dde8 100%);
+            animation: foggyFade 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes sunnyPulse {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.15); }
+        }
+
+        @keyframes rainyDrift {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        @keyframes flashStorm {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(2); }
+        }
+
+        @keyframes snowyDrift {
+            0% { background-position: left; }
+            100% { background-position: right; }
+        }
+
+        @keyframes foggyFade {
+            0% { opacity: 1; }
+            100% { opacity: 0.85; }
+        }
+    </style>
+</head>
+<body class="{{ background_class }}">
+    <div class="container">
+        <h1>Weather App 🌦️</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="city" placeholder="Enter city name" required>
+            <br>
+            <button type="submit">Get Weather</button>
+        </form>
+
+        {% if weather %}
+            <div class="weather">
+                {% if weather.error %}
+                    <p class="error">{{ weather.error }}</p>
+                {% else %}
+                    <h2>{{ weather.city }}</h2>
+                    <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="icon">
+                    <p><strong>{{ weather.temperature }}°C</strong></p>
+                    <p>{{ weather.description|capfirst }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if forecast %}
+            <h3 style="margin-top: 2rem;">5-Day Forecast</h3>
+            <div class="forecast-grid">
+                {% for day in forecast %}
+                    <div class="forecast-card">
+                        <div class="date">{{ day.date }}</div>
+                        <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" alt="icon">
+                        <div class="temp"><strong>{{ day.temp }}°C</strong></div>
+                        <div class="desc">{{ day.desc|capfirst }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
