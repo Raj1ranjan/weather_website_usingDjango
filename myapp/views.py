@@ -15,6 +15,7 @@ def home(request):
 
         
         current_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+
         r1 = requests.get(current_url)
 
         if r1.status_code == 200:
